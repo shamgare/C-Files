@@ -1,0 +1,177 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <limits.h>
+
+//UAC PROBLEM A
+void UACprobA()
+{
+    struct Applicant { char ID[15], Name[55], Major[35], Position[35]; double GPA; };
+    struct Applicant Applicants[5005];
+    int input, i, j; scanf("%d", &input); getchar();
+    for (i = 0; i < input; i++)
+    {
+        gets(Applicants[i].ID); gets(Applicants[i].Name); gets(Applicants[i].Major);
+        scanf("%lf", &Applicants[i].GPA); getchar(); gets(Applicants[i].Position);
+    }
+    int cases; scanf("%d", &cases); getchar();
+    for (i = 1; i <= cases; i++)
+    {
+        char findOpen[35], findMajor[35]; double minGPA; int count = 0;
+        scanf("%s %s %lf", findOpen, findMajor, &minGPA); getchar();
+        for (j = 0; j < input; j++)
+        {
+            int statusOpen = strcmp(findOpen, Applicants[j].Position);
+            int statusMajor = strcmp(findMajor, Applicants[j].Major);
+            int statusGPA = Applicants[j].GPA >= minGPA;
+            if (!statusOpen && !statusMajor && statusGPA) count++;
+        }
+        printf("CASE #%d: %d\n", i, count);
+    }
+}
+
+//UAC PROBLEM B
+void resultB(int position, int partition, int *array, int size, long long limit)
+{
+	long long count = 0;
+	int current = -1, i;
+	for (i = position; i >= 0; i--)
+    {
+		if (count + array[i] > limit || i == partition - 2)
+        {
+			resultB(i, partition - 1, array, size, limit); current = i; break;
+		}
+		count += array[i];
+	}
+	if (current >= 0) printf("; ");
+	for (i = current + 1; i <= position; i++)
+    {
+		printf("%d%s", array[i], i == size - 1 ? "" : " ");
+	}
+}
+long long int searchB(int *array, int size, int partition)
+{
+	long long int left = 1, right = LLONG_MAX, limit = LLONG_MAX;
+	while (left < right)
+    {
+		long long int mid = left + (right - left) / 2, sum = 0;
+		int status = -1, index = 0, current = 1;
+		while (index < size)
+        {
+			if (array[index] > mid) status = 0;
+			if (sum + array[index] > mid) { current++; sum = 0; }
+			if (sum <= mid) { sum += array[index]; index++; }
+		}
+		if (current <= partition) status = 1;
+		if (status == -1) status = 0;
+		if (status) { limit = (limit < mid) ? limit : mid; right = mid; }
+		else left = mid + 1;
+	}
+	return limit;
+}
+void UACprobB()
+{
+    int input, i, j; scanf("%d", &input); getchar();
+    for (i = 1; i <= input; i++)
+    {
+        int cities, staff; scanf("%d %d", &cities, &staff); getchar();
+        int values[505];
+        for (j = 0; j < cities; j++) scanf("%lld", &values[j]);
+        long long int limit = searchB(values, cities, staff);
+		resultB(cities - 1, staff, values, cities, limit);
+		printf("\n");
+    }
+}
+
+//UAC PROBLEM C
+void sortC(int* array, int low, int high)
+{
+    if (low < high)
+    {
+        int middle = low + (high - low) / 2, i, j, k;
+        sortC(array, low, middle); sortC(array, middle + 1, high);
+        int leftSize = middle - low + 1, rightSize = high - middle, leftArray[leftSize], rightArray[rightSize];
+        for (i = 0; i < leftSize; i++) leftArray[i] = array[low + i];
+        for (j = 0; j < rightSize; j++) rightArray[j] = array[middle + 1 + j];
+        i = 0, j = 0, k = low;
+        while (i < leftSize && j < rightSize)
+        {
+            if (leftArray[i] <= rightArray[j]) { array[k] = leftArray[i]; i++; }
+            else { array[k] = rightArray[j]; j++; } k++;
+        }
+        while (i < leftSize) { array[k] = leftArray[i]; i++; k++; }
+        while (j < rightSize) { array[k] = rightArray[j]; j++; k++; }
+    }
+}
+void UACprobC()
+{
+    FILE *db = fopen("testdata.in", "r");
+    int input, i, j; fscanf(db, "%d\n", &input);
+    for (i = 1; i <= input; i++)
+    {
+        int number; fscanf(db, "%d\n", &number);
+        int values[number];
+        long long int sumA = 0, sumB = 0;
+        for (j = 0; j < number; j++) fscanf(db, "%d", &values[j]);
+        sortC(values, 0, number - 1);
+        for (j = number - 1; j >= 0; j--)
+        {
+            if (sumA + values[j] - sumB > sumB + values[j] - sumA) sumB += values[j];
+            else sumA += values[j];
+        }
+        printf("Case #%d: %lld\n", i, abs(sumA - sumB));
+    }
+}
+
+//UAC PROBLEM D
+void sortD(int* array, int low, int high)
+{
+    if (low < high)
+    {
+        int middle = low + (high - low) / 2, i, j, k;
+        sortD(array, low, middle); sortD(array, middle + 1, high);
+        int leftSize = middle - low + 1, rightSize = high - middle, leftArray[leftSize], rightArray[rightSize];
+        for (i = 0; i < leftSize; i++) leftArray[i] = array[low + i];
+        for (j = 0; j < rightSize; j++) rightArray[j] = array[middle + 1 + j];
+        i = 0, j = 0, k = low;
+        while (i < leftSize && j < rightSize)
+        {
+            if (leftArray[i] <= rightArray[j]) { array[k] = leftArray[i]; i++; }
+            else { array[k] = rightArray[j]; j++; } k++;
+        }
+        while (i < leftSize) { array[k] = leftArray[i]; i++; k++; }
+        while (j < rightSize) { array[k] = rightArray[j]; j++; k++; }
+    }
+}
+int searchD(int* array, int left, int right, int target)
+{
+    while (left <= right)
+    {
+        int middle = left + (right - left) / 2;
+        if (array[middle] == target) return 1;
+        else if (array[middle] < target) left = middle + 1;
+        else right = middle - 1;
+    }
+    return 0;
+}
+void UACprobD()
+{
+    FILE *db = fopen("testdata.in", "r");
+    int input, i, j; fscanf(db, "%d\n", &input);
+    for (i = 1; i <= input; i++)
+    {
+        int number, target, count = 0;
+        fscanf(db, "%d %d\n", &number, &target);
+        int values[number];
+        for (j = 0; j < number; j++) fscanf(db, "%d", &values[j]);
+        sortD(values, 0, number - 1);
+        for (j = 0; j < number; j++)
+        {
+            count += searchD(values, j + 1, number - 1, target - values[j]);
+        }
+        printf("Case #%d: %d\n", i, count);
+    }
+}
+
+//EXECUTION
+int main() { UACprobA(); return 0; }

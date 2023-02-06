@@ -222,7 +222,7 @@ void test10()
 
 void test11()
 {
-
+    printf("Hello World\n");
 }
 
 void test12()

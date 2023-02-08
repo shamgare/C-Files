@@ -61,9 +61,8 @@ void deleteNode(int val)
         }
         //if delete else
         else {
-            while (curr->next->val != val) {
+            while (curr->next != 0 && curr->next->val != val) {
                 curr = curr->next;
-                if (curr->next == NULL) break;
             }
 
             if (curr->next != NULL) {
@@ -86,7 +85,7 @@ int main(int argc, char const* argv[])
     insertTail(60);
     insertTail(70);
 
-    deleteNode(6);
+    deleteNode(60);
     // deleteNode(50);
     // deleteNode(60);
     // deleteNode(60);

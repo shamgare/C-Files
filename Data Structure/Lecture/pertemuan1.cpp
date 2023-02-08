@@ -7,17 +7,16 @@ typedef struct Node {
 
 int main()
 {
-    // int n = 9;
-    // int* pn = &n;
+    int n = 9;
+    int* pn = &n;
 
-    // printf("Value of n : %d\n", n);
-    // printf("Address of n : %d\n", &n);
+    printf("Value of n : %d\n", n);
+    printf("Address of n : %d\n", &n);
     
-    // printf("Value of pn : %d\n", *pn);
-    // printf("Address of n : %d\n", pn);
+    printf("Value of pn : %d\n", *pn);
+    printf("Address of n : %d\n", pn);
 
-    // *pn = 70;
+    *pn = 70;
     
-    // printf("New value of n : %d\n", n);
-    // n
+    printf("New value of n : %d\n", n);
 }

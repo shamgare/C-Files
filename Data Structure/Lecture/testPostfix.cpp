@@ -37,9 +37,8 @@ void pop(int val)
         free(curr);
     }
     else {
-        while (curr->next->val != val) {
+        while (curr->next && curr->next->val != val) {
             curr = curr->next;
-            if (curr->next == NULL) break;
         }
         
         stack* del;
@@ -77,7 +76,7 @@ int main(int argc, char const* argv[])
             int b = head->val;
             pop(head->val);
 
-            // printf("%d %d\n", a, b);
+            printf("%d %d\n", a, b);
 
             if (str[i] == '+') {
                 push(b + a);
@@ -103,3 +102,11 @@ int main(int argc, char const* argv[])
 }
 
 // 4652-*3/+
+// 765*32^-+ postfix 28
+/*
+7 30 3 2 ^
++-^23*567 prefix -15
+
++/3*-2564
+
+*/

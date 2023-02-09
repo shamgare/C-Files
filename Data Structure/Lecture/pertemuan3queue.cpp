@@ -13,7 +13,7 @@ typedef struct data {
 data* head = 0;
 data* tail = 0;
 
-void pushTail(char* name, int age)
+void pushTail(const char* name, int age)
 {
     data* temp = (data*)malloc(sizeof(data));
     temp->age = age;
@@ -53,13 +53,9 @@ void display()
 
 int main()
 {
-    char a[] = "jul";
-    char b[] = "julius";
-    char c[] = "julian";
-
-    pushTail(a, 30);
-    pushTail(b, 25);
-    pushTail(c, 22);
+    pushTail("jul", 30);
+    pushTail("julius", 25);
+    pushTail("julian", 22);
 
     popHead();
 

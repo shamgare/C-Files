@@ -4,17 +4,17 @@
 
 // double link list
 
-typedef struct node {
+struct node {
     char name[100];
     int age;
     struct node* next;
     struct node* prev;
-} node;
+};
 
 node* head = 0;
 node* tail = 0;
 
-void pushHead(char* name, int age)
+void pushHead(const char* name, int age)
 {
     node* temp = (node*)malloc(sizeof(node));
     strcpy(temp->name, name);
@@ -31,7 +31,7 @@ void pushHead(char* name, int age)
     }
 }
 
-void pushTail(char* name, int age)
+void pushTail(const char* name, int age)
 {
     node* temp = (node*)malloc(sizeof(node));
     strcpy(temp->name, name);
@@ -48,21 +48,21 @@ void pushTail(char* name, int age)
     }
 }
 
-void pushValue(char* name, int age)
+void pushValue(node** head, node** tail, const char* name, int age)
 {
     node* temp = (node*)malloc(sizeof(node));
     strcpy(temp->name, name);
     temp->age = age;
     temp->prev = temp->next = 0;
     
-    if (!head || strcmp(temp->name, head->name) < 0) {
+    if (!(*head) || strcmp(temp->name, (*head)->name) < 0) {
         pushHead(name, age);
     }
-    else if (strcmp(temp->name, tail->name) >= 0) {
+    else if (strcmp(temp->name, (*tail)->name) >= 0) {
         pushTail(name, age);
     }
     else {
-        node* curr = head;
+        node* curr = *head;
         while (strcmp(temp->name, curr->next->name) >= 0) {
             curr = curr->next;
         }
@@ -117,11 +117,11 @@ void popValue(const char* name)
     }
     else {
         node* curr = head;
-        while (curr->next != 0 && strcmp(curr->name, name) != 0) {
+        while (curr->next && strcmp(curr->name, name) != 0) {
             curr = curr->next;
         }
         
-        if (curr->next == NULL) {
+        if (!curr->next) {
             printf("Not Found\n");
             return;
         }
@@ -138,7 +138,7 @@ void view()
 {
     node* curr = head;
 
-    while (curr != 0) {
+    while (curr) {
         printf("%s %d\n", curr->name, curr->age);
         curr = curr->next;
     }
@@ -146,15 +146,13 @@ void view()
 
 int main()
 {
-    char a[] = "Michael"; int age1 = 20;
-    char b[] = "Darwin"; int age2 = 30;
-    char c[] = "Franklin"; int age3 = 25;
-    char d[] = "Erwin"; int age4 = 22;
+    node* head = 0;
+    node* tail = 0;
 
-    pushValue(a, age1);
-    pushValue(b, age2);
-    pushValue(c, age3);
-    pushValue(d, age4);
+    pushValue(&head, &tail, "Michael", 20);
+    pushValue(&head, &tail, "Darwin", 30);
+    pushValue(&head, &tail, "Franklin", 32);
+    pushValue(&head, &tail, "Erwin", 20);
     
     popValue("Darwin");
 
@@ -209,4 +207,5 @@ void pushValue(node** head, node** tail, char* name, int age)
         temp->prev = curr;
     }
 }
+
 */

@@ -1,39 +1,37 @@
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 
 struct node {
-    int val;
+    char name[40];
     struct node* left;
     struct node* right;
-} *root;
+};
 
-node* createNode(int val) {
+node* root;
+
+node* createNode(const char* name) {
     node* temp = (node*)malloc(sizeof(node));
-    temp->val = val;
+    strcpy(temp->name, name);
     temp->left = temp->right = 0;
     return temp;
 }
 
-node* insert(node* curr, node* neww) {
+node* insertNode(node* curr, node* neww) {
     if (!curr) return neww;
-    else if (curr->val < neww->val) {
-        curr->right = insert(curr->right, neww);
+    else if (strcmp(neww->name, curr->name) < 0) {
+        curr->left = insertNode(curr->left, neww);
     }
-    else if (curr->val > neww->val) {
-        curr->left = insert(curr->left, neww);
+    else {
+        curr->right = insertNode(curr->right, neww);
     }
     return curr;
 }
 
-node* del(node* curr, int val) {
+node* deleteNode(node* curr, const char* name) {
     if (!curr) return curr;
-    
-    if (curr->val < val) {
-        curr->right = del(curr->right, val); 
-    }
-    else if (curr->val > val) {
-        curr->left = del(curr->left, val);
-    }
+    else if (strcmp(name, curr->name) < 0) curr->left = deleteNode(curr->left, name);
+    else if (strcmp(name, curr->name) > 0) curr->right = deleteNode(curr->right, name);
     else {
         if (!curr->left && !curr->right) {
             free(curr); curr = 0;
@@ -43,57 +41,43 @@ node* del(node* curr, int val) {
             curr = curr->right;
             free(temp); temp = 0;
         }
-        else if (!curr->right) {   
+        else if (!curr->right) {
             node* temp = curr;
             curr = curr->left;
             free(temp); temp = 0;
         }
         else {
             node* temp = curr->left;
-            while (temp->right) {
-                temp = temp->right;
-            }
-            curr->val = temp->val;
-            curr->left = del(curr->left, temp->val);
+            while (temp->right) temp = temp->right;
+            strcpy(curr->name, temp->name);
+            curr->left = deleteNode(curr->left, temp->name);
         }
     }
     return curr;
 }
 
-node* delAll(node* curr) {
-    if (!curr) return curr;
-    while (curr) del(curr, curr->val);
-}
-
-node* search(node* curr, int val) {
-    if (!curr) return curr;
-    if (curr->val == val) {
-        return curr;
-    }
-    else if (curr->val < val) {
-        return search(curr->right, val);
-    }
-    else {
-        return search(curr->left, val);
-    }
-}
-
 void view(node* curr) {
     if (curr) {
         view(curr->left);
-        printf("%d -> ", curr->val);
+        printf("%s -> ", curr->name);
         view(curr->right);
     }
 }
 
 int main()
 {
-    root = insert(root, createNode(30));
-    root = insert(root, createNode(20));
-    root = insert(root, createNode(40));
-    root = insert(root, createNode(10));
-    root = insert(root, createNode(60));
-    root = insert(root, createNode(90));
+    root = insertNode(root, createNode("Javier"));
+    root = insertNode(root, createNode("Abdhy"));
+    root = insertNode(root, createNode("Daniel"));
+    root = insertNode(root, createNode("Yoga"));
+    root = insertNode(root, createNode("Jacky"));
+    root = insertNode(root, createNode("Ferren"));
+    root = insertNode(root, createNode("Ichsan"));
+    root = insertNode(root, createNode("Ghoran"));
+
+    root = deleteNode(root, "Javier");
+
+    // struct node* find = search(root, "Ichsan");
 
     view(root);
 }

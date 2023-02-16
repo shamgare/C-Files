@@ -76,19 +76,17 @@ int main(int argc, char const* argv[])
             double b = head->val;
             pop(head->val);
 
-            printf("%d %d\n", a, b);
-
             if (str[i] == '+') {
-                push(b + a);
+                push(a + b);
             }
             else if (str[i] == '-') {
-                push(b - a);
+                push(a - b);
             }
             else if (str[i] == '/') {
-                push(b / a);
+                push(a / b);
             }
             else if (str[i] == '*') {
-                push(b * a);
+                push(a * b);
             }
             else {
                 push(pow(b, a));
@@ -101,6 +99,6 @@ int main(int argc, char const* argv[])
     return 0;
 }
 /*
-ABCD+*-EF/-
-5321+*-24/-
+--A*B+CD/EF
+--5*3+21/24
 */

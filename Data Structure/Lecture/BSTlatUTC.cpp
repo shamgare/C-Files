@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 struct cust {
-    char name[101];
+    char name[51];
     char membership[20];
     struct cust* left;
     struct cust* right;
@@ -28,6 +28,32 @@ mem* createMem(const char* type) {
     strcpy(temp->type, type);
     temp->left = temp->right = 0;
     return temp;
+}
+
+mem* insertMem(mem* curr, mem* neww) {
+    if (!curr) return neww;
+    
+    if (strcmp(curr->type, neww->type) < 0) {
+        curr->right = insertMem(curr->right, neww);
+    }
+    else if (strcmp(curr->type, neww->type) > 0) {
+        curr->left = insertMem(curr->left, neww);
+    }
+    
+    return curr;
+}
+
+cust* insertCust(cust* curr, cust* neww) {
+    if (!curr) return neww;
+    
+    if (strcmp(curr->name, neww->name) < 0) {
+        curr->right = insertCust(curr->right, neww);
+    }
+    else if (strcmp(curr->name, neww->name) > 0) {
+        curr->left = insertCust(curr->left, neww);
+    }
+    
+    return curr;
 }
 
 cust* deleteCust(cust* curr, char* name) {
@@ -67,32 +93,6 @@ cust* deleteCust(cust* curr, char* name) {
     return curr;
 }
 
-cust* insertCust(cust* curr, cust* neww) {
-    if (!curr) return neww;
-    
-    if (strcmp(curr->name, neww->name) < 0) {
-        curr->right = insertCust(curr->right, neww);
-    }
-    else if (strcmp(curr->name, neww->name) > 0) {
-        curr->left = insertCust(curr->left, neww);
-    }
-    
-    return curr;
-}
-
-mem* insertMem(mem* curr, mem* neww) {
-    if (!curr) return neww;
-    
-    if (strcmp(curr->type, neww->type) < 0) {
-        curr->right = insertMem(curr->right, neww);
-    }
-    else if (strcmp(curr->type, neww->type) > 0) {
-        curr->left = insertMem(curr->left, neww);
-    }
-    
-    return curr;
-}
-
 cust* searchCust(cust* curr, char* name) {
     if (!curr || strcmpi(curr->name, name) == 0) {
         return curr;
@@ -106,13 +106,13 @@ cust* searchCust(cust* curr, char* name) {
 }
 
 mem* searchMem(mem* curr, char* type) {
-    if (!curr || strcmpi(curr->type, type) == 0) {
+    if (!curr || strcmp(curr->type, type) == 0) {
         return curr;
     }
-    else if (strcmpi(curr->type, type) < 0) {
+    else if (strcmp(curr->type, type) < 0) {
         return searchMem(curr->right, type);
     }
-    else if (strcmpi(curr->type, type) > 0) {
+    else if (strcmp(curr->type, type) > 0) {
         return searchMem(curr->left, type);
     }
 }
@@ -221,13 +221,4 @@ int main()
             break;
         }
     } while (input != 4);
-}
-
-int j = 1;
-void viewM(mem* curr) {
-    if (curr) {
-        viewM(curr->left);
-        printf("%d. %s\n", j++, curr->type);
-        viewM(curr->right);
-    }
 }

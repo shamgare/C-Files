@@ -3,7 +3,7 @@
 
 struct Node {
     int val;
-    Node* left, *right;
+    Node* left, * right;
 } *root;
 
 Node* createNode(int val) {

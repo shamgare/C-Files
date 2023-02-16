@@ -35,17 +35,22 @@ void insert(const char* heroName)
     // printf("%d\n", idx);
 
     // insert to hash table, apply chaining if needed
-    
+
     // if curr idx in hash table is empty
+    data* curr = dataArr[idx];
     if (dataArr[idx] == 0) {
+        dataArr[idx] = temp;
+    }
+    else if (strcmp(temp->heroName, curr->heroName) < 0) {
+        temp->next = curr;
         dataArr[idx] = temp;
     }
     // else
     else {
-        data* curr = dataArr[idx];
-        while (curr->next != 0) {
+        while (curr->next && strcmp(temp->heroName, curr->next->heroName) >= 0) {
             curr = curr->next;
         }
+        temp->next = curr->next;
         curr->next = temp;
     }
 }
@@ -66,16 +71,16 @@ void display()
 
 int main()
 {
-    insert("Youtube21"); 
-    insert("noobmaster96"); 
+    insert("Youtube21");
+    insert("noobmaster96");
     insert("xTyranx");
-    insert("Revan789"); 
+    insert("Revan789");
     insert("Mario");
     insert("RoboFox");
-    insert("SnakeyBoy"); 
-    insert("Derp"); 
-    insert("Herpina"); 
-    insert("DonChef"); 
+    insert("SnakeyBoy");
+    insert("Derp");
+    insert("Herpina");
+    insert("DonChef");
 
     display();
 }

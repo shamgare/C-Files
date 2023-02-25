@@ -33,10 +33,10 @@ int partition(int low, int high)
         j++;
     }
 
-    strcpy(kel[j].n1[high].names, kel[j].n1[i+1].names);
-    strcpy(kel[j].n1[i+1].names, pivot);
+    strcpy(kel[j].n1[high].names, kel[j].n1[i + 1].names);
+    strcpy(kel[j].n1[i + 1].names, pivot);
 
-    return i+1;
+    return i + 1;
 }
 
 void quickSort(int low, int high)
@@ -45,22 +45,22 @@ void quickSort(int low, int high)
 
     int pos = partition(low, high);
 
-    quickSort(low, pos-1);
+    quickSort(low, pos - 1);
     quickSort(pos, high);
 }
 
 int main()
 {
     // struct nama kel[j].n1[5];
-    
-    for (int i = 0; i < 5; i++) {
-        scanf("%s %s", kel[i].n1[i].names, kel[j].n1[i].asal);
-    }
-    int size = 5;
-    quickSort(0, size - 1);
 
-    for (int i = 0; i < 5; i++) {
-        printf("%s %s\n", kel[i].n1[i].names, kel[j].n1[i].asal);
-    }
+    // for (int i = 0; i < 5; i++) {
+    //     scanf("%s %s", kel[i].n1[i].names, kel[j].n1[i].asal);
+    // }
+    // int size = 5;
+    // quickSort(0, size - 1);
+
+    // for (int i = 0; i < 5; i++) {
+    //     printf("%s %s\n", kel[i].n1[i].names, kel[j].n1[i].asal);
+    // }
 
 }

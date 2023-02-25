@@ -39,7 +39,7 @@ void insertNode(const char* name) {
         table[key] = neww;
     }
     else {
-        while (curr->next && strcmp(name, curr->name) >= 0) {
+        while (curr->next && strcmp(name, curr->next->name) >= 0) {
             curr = curr->next;
         }
         neww->next = curr->next;

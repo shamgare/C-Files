@@ -72,7 +72,7 @@ void buyMenu() {
 	do {
 		printf("Input creature habitat: ");
 		scanf("%[^\n]", habitat); getchar();
-	} while (strcmp(" Terra", strrchr(habitat, ' ') ? strrchr(habitat, ' ') : "no") != 0);
+	} while (strcmp(" Terra", strrchr(habitat, ' ') ? strrchr(habitat, ' ') : "no"));
 
 	double price;
 	do {

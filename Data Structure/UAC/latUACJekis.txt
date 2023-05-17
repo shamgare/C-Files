@@ -1,0 +1,276 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define CC const char
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+
+typedef struct Node
+{
+    char *username, *job;
+    int score, match, win, lose, draw, rate;
+    struct Node *prev, *next;
+} Node;
+
+typedef struct AVLNode
+{
+    int height;
+    struct Node *head, *tail;
+    struct AVLNode *left, *right;
+} AVLNode;
+
+const char *getJob(int job)
+{
+    switch (job)
+    {
+        case 0: return "Novice";
+        case 1: return "Warrior";
+        case 2: return "Sniper";
+        case 3: return "Wizard";
+        case 4: return "Druid";
+        case 5: return "Assassin";
+    }
+}
+
+int calculateHeight(AVLNode *root)
+{
+    return !root ? 0 : MAX(calculateHeight(root->left), calculateHeight(root->right)) + 1;
+}
+
+int calculateBalanceFactor(AVLNode *root)
+{
+    return !root ? 0 : calculateHeight(root->left) - calculateHeight(root->right);
+}
+
+Node *createNode(CC *username, CC *job, int score, int match, int win, int lose, int draw)
+{
+    Node *newNode = malloc(sizeof(Node));
+    newNode->username = malloc(strlen(username) + 1);
+    strcpy(newNode->username, username);
+    newNode->job = malloc(strlen(job) + 1);
+    strcpy(newNode->job, job);
+    newNode->score = score;
+    newNode->match = match;
+    newNode->win = win;
+    newNode->lose = lose;
+    newNode->draw = draw;
+    newNode->rate = (int)((double)win / match * 100);
+    newNode->prev = newNode->next = NULL;
+    return newNode;
+}
+
+AVLNode *createAVLNode(Node *newNode)
+{
+    AVLNode *newAVLNode = malloc(sizeof(AVLNode));
+    newAVLNode->height = 1;
+    newAVLNode->head = newAVLNode->tail = newNode;
+    newAVLNode->left = newAVLNode->right = NULL;
+    return newAVLNode;
+}
+
+AVLNode *rotateRight(AVLNode *root)
+{
+    AVLNode *newParent = root->left;
+    root->left = newParent->right;
+    newParent->right = root;
+    root->height = calculateHeight(root);
+    newParent->height = calculateHeight(newParent);
+    return newParent;
+}
+
+AVLNode *rotateLeft(AVLNode *root)
+{
+    AVLNode *newParent = root->right;
+    root->right = newParent->left;
+    newParent->left = root;
+    root->height = calculateHeight(root);
+    newParent->height = calculateHeight(newParent);
+    return newParent;
+}
+
+AVLNode *balance(AVLNode *root)
+{
+    root->height = calculateHeight(root);
+    int balanceFactor = calculateBalanceFactor(root);
+    if (balanceFactor > 1)
+    {
+        if (calculateBalanceFactor(root->left) < 0)
+        {
+            root->left = rotateLeft(root->left);
+        }
+        return rotateRight(root);
+    }
+    else if (balanceFactor < -1)
+    {
+        if (calculateBalanceFactor(root->right) > 0)
+        {
+            root->right = rotateRight(root->right);
+        }
+        return rotateLeft(root);
+    }
+    return root;
+}
+
+AVLNode *insertAVLNode(Node *newNode, AVLNode *root)
+{
+    if (!root) return createAVLNode(newNode);
+    else if (newNode->score < root->head->score) root->left = insertAVLNode(newNode, root->left);
+    else if (newNode->score > root->tail->score) root->right = insertAVLNode(newNode, root->right);
+    else
+    {
+        Node *curr = root->head;
+        if (newNode->rate > curr->rate)
+        {
+            newNode->next = curr;
+            curr->prev = newNode;
+            root->head = newNode;
+        }
+        else if (newNode->rate < curr->rate)
+        {
+            while (curr->next && newNode->rate < curr->next->rate) curr = curr->next;
+            newNode->next = curr->next;
+            newNode->prev = curr;
+            if (curr->next) curr->next->prev = newNode;
+            else root->tail = newNode;
+            curr->next = newNode;
+        }
+        else
+        {
+            while (curr && curr->rate >= newNode->rate) curr = curr->next;
+            if (curr)
+            {
+                newNode->next = curr;
+                newNode->prev = curr->prev;
+                curr->prev->next = newNode;
+                curr->prev = newNode;
+            }
+            else
+            {
+                newNode->prev = root->tail;
+                root->tail->next = newNode;
+                root->tail = newNode;
+            }
+        }
+    }
+    return balance(root);
+}
+
+AVLNode *findAVLNode(int score, AVLNode *root)
+{
+    if (!root) return NULL;
+    else if (score < root->head->score) return findAVLNode(score, root->left);
+    else if (score > root->tail->score) return findAVLNode(score, root->right);
+    else return root;
+}
+
+AVLNode *deleteNode(int score, AVLNode *root)
+{
+    if (!root) return NULL;
+    else if (score < root->head->score) root->left = deleteNode(score, root->left);
+    else if (score > root->tail->score) root->right = deleteNode(score, root->right);
+    else
+    {
+        if (root->left == NULL && root->right == NULL)
+        {
+            free(root);
+            root = NULL;
+        }
+        else if (root->left == NULL)
+        {
+            AVLNode *temp = root->right;
+            free(root);
+            root = temp;
+        }
+        else if (root->right == NULL)
+        {
+            AVLNode *temp = root->left;
+            free(root);
+            root = temp;
+        }
+        else
+        {
+            AVLNode *temp = root->right;
+            while (temp->left) temp = temp->left;
+            root->head = temp->head;
+            root->tail = temp->tail;
+            root->right = deleteNode(temp->head->score, root->right);
+        }
+    }
+    if (!root) return NULL;
+    return balance(root);
+}
+
+void printNode(Node *curr)
+{
+    printf("Score %d\n", curr->score);
+    int count = 1;
+    while (curr)
+    {
+        printf("%d. %s [%s] (%d%%)\n", count++, curr->username, curr->job, curr->rate);
+        curr = curr->next;
+    }
+    printf("\n");
+    return;
+}
+
+void infix(AVLNode *root)
+{
+    if (!root) return;
+    infix(root->left);
+    Node *curr = root->head;
+    printNode(curr);
+    infix(root->right);
+    return;
+}
+
+AVLNode *initializeData()
+{
+    AVLNode *root = NULL;
+    root = insertAVLNode(createNode("Gregor", getJob(2), 113, 10, 9, 1, 0), root);
+    root = insertAVLNode(createNode("Heimdall", getJob(4), 300, 100, 50, 50, 0), root);
+    root = insertAVLNode(createNode("Travy", getJob(1), 300, 200, 100, 100, 0), root);
+    root = insertAVLNode(createNode("Tetron", getJob(0), 300, 50, 25, 25, 0), root);
+    root = insertAVLNode(createNode("Homer", getJob(4), 113, 10, 8, 2, 0), root);
+    root = insertAVLNode(createNode("Garen", getJob(1), 113, 100, 70, 30, 0), root);
+    return root;
+}
+
+int main()
+{
+    AVLNode *root = initializeData();
+    int inputNumber = -1; scanf("%d", &inputNumber); getchar();
+    for (int i = 1; i <= inputNumber; i++)
+    {
+        char inputCommand[100] = {}; gets(inputCommand);
+        if (strcmp(inputCommand, "INSERT") == 0)
+        {
+            int numberData = -1; scanf("%d", &numberData); getchar();
+            for (int j = 1; j <= numberData; j++)
+            {
+                char username[100] = {}; int jobType = -1;
+                int score = -1, match = -1, win = -1, lose = -1, draw = -1;
+                scanf("%[^#]#%d#%d#%d#%d#%d#%d", username, &jobType, &score, &match, &win, &lose, &draw); getchar();
+                Node *newNode = createNode(username, getJob(jobType), score, match, win, lose, draw);
+                root = insertAVLNode(newNode, root);
+            }
+        }
+        else if (strcmp(inputCommand, "FIND") == 0)
+        {
+            int numberData = -1; scanf("%d", &numberData); getchar();
+            AVLNode *curr = findAVLNode(numberData, root);
+            if (curr) printNode(curr->head);
+            else
+            {
+                printf("Score %d\n", numberData);
+                printf("No data found for %d\n", numberData);
+            }
+        }
+        else if (strcmp(inputCommand, "DELETE") == 0)
+        {
+            int numberData = -1; scanf("%d", &numberData); getchar();
+            root = deleteNode(numberData, root);
+            printf("\n");
+        }
+        else if (strcmp(inputCommand, "SHOWALL") == 0) infix(root);
+    }
+    return 0;
+}

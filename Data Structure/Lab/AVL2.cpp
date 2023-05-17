@@ -7,13 +7,12 @@ typedef struct node {
     int price;
     int id;
     int height;
-    int bf;
     struct node* left;
     struct node* right;
 } node;
 
 int getMax(int a, int b) {
-    return a > b ? a : b;
+    return a >= b ? a : b;
 }
 int getHeight(node* curr) {
     return !curr ? 0 : 1 + getMax(getHeight(curr->left), getHeight(curr->right));
@@ -62,18 +61,6 @@ node* insertNode(node* curr, node* neww) {
     curr->height = getHeight(curr);
     int bf = getBf(curr);
 
-    // if (bf > 1) {
-    //     if (neww->id > curr->left->id) {
-    //         curr->left = leftRotate(curr->left);
-    //     }
-    //     return rightRotate(curr);
-    // }
-    // else if (bf < -1) {
-    //     if (neww->id < curr->right->id) {
-    //         curr->right = rightRotate(curr->right);
-    //     }
-    //     return leftRotate(curr);
-    // }
     if (bf > 1) {
         if (getBf(curr->left) < 0) {
             curr->left = leftRotate(curr->left);
@@ -169,3 +156,20 @@ int main()
 
     return 0;
 }
+
+/*
+
+    // if (bf > 1) {
+    //     if (neww->id > curr->left->id) {
+    //         curr->left = leftRotate(curr->left);
+    //     }
+    //     return rightRotate(curr);
+    // }
+    // else if (bf < -1) {
+    //     if (neww->id < curr->right->id) {
+    //         curr->right = rightRotate(curr->right);
+    //     }
+    //     return leftRotate(curr);
+    // }
+
+*/
